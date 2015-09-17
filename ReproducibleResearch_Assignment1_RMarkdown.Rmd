@@ -1,0 +1,54 @@
+---
+title: "Reproducible Research Assignment 1"
+author: "Kevin Creese"
+date: "Wednesday, September 16, 2015"
+output: html_document
+---
+
+## Summary
+This report is an R Markdown file that describes the process used to compile data presented in the first assignment of **Coursera's Reproducible Research**.  Throughout this assignment we will identify the steps used to:
+        - Load and process the data
+        - Answer the question: What is the mean total number of steps taken per day?
+        - Answer the question: What is the average daily activity pattern?
+
+### Data Overview
+The data used for this report comes from the activities recorded by an unnamed individual wearing a personal movement device such as a [Fitbit](http://www.fitbit.com), [Nike Fuleband](http://www.nike.com/us/en_us/c/nikeplus-fuel), or [Jawbone Up](https://jawbone.com/up). This assignment makes use of data from a personal activty monitoring device.  The device collects data in five minute intervals through out the day.  The data consists of two months of data from an anonymous individual collected during teh months of October and November, 2012 and include the number of steps taken in 5 minute intervals each day.  
+
+### Data Collection
+The data used in this report can be can be accessed from [Coursera's Reproducible Research - Assignment 1](https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip)
+
+The variables included in this data set are: 
+<tr>
+   1. **steps:**Number of steps taking in a 5-minute interval (missing values are recorded as NA)  
+   2. **date:** The date on which the measurement was taken in YYYY-MM-DD format  
+   3. **interval:** Identifier for the 5-minute interval in which measurements was taken  
+   
+The dataset is stored in a comma-seperated-value (CSV) file and there are a total of 17,568 observations contained within the dataset.
+
+### Load Data - Download, set dataframe, view summary of data
+*First we will setup a tempfile and download and unzip the dataset.  Once that is done we will assign the data set to the dataframe `data`.*
+````{r LoadDataSet, echo=TRUE}
+if(!file.exists("getdata-projectfiles-UCI HAR Dataset.zip")) {
+        temp <- tempfile()
+        download.file("http://d396qusza40orc.cloudfront.net/repdata%2Fdata%2Factivity.zip",temp)
+        unzip(temp)
+        unlink(temp)
+}
+
+data <- read.csv("activity.csv")
+summary(data)
+```
+
+## What is the mean total number of steps taken? 
+*(raw data)*
+Here we will summarize the steps by day, create a histogram, and calculate the mean and median.
+```{r RawMean-Hist}
+daily_steps <- aggregate(steps ~ date, data, sum)
+hist(daily_steps$steps, main = paste("Total Steps by Day"), xlab="Number of Steps Each Day", col="green")
+StepsMean <- mean(daily_steps$steps)
+StepsMedian <- median(daily_steps$steps)
+```
+
+The mean is `r StepsMean` and the median is `r StepsMedian`
+
+

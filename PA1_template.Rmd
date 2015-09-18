@@ -99,4 +99,45 @@ modDailySteps <- aggregate(steps ~ date, modData, sum)
 hist(modDailySteps$steps, main = paste("Modified - Total Steps Each Day"), col="red", xlab="Number of steps")
 ```
 
+Calculate the mean and median with the revised data
+```{r}
+rmain <- mean(modDailySteps$steps)
+rmedian <- median(modDailySteps$steps)
+```
 
+So...  What's the diff between regular and revised?
+```{r}
+mean_diff <- rmain - StepsMean
+median_diff <- rmedian - StepsMedian
+```
+
+So...  What's the total difference?
+```{r}
+total_diff <- sum(modDailySteps$steps) - sum(dailySteps$steps)
+```
+
+The revised data mean is `r rmain`.  
+The revised data median is `r rmedian`.  
+The difference between the regular mean and the revised mean is `r mean_diff`.  
+The difference between the regular median and the revised median is `r median_diff`.  
+The difference between the total number of steps between regular and unleaded data is `r total_diff`.   
+
+The result of modifying the data was that there were `r total_diff` more steps in the revised data.
+
+
+### Are there difference in activity patterns between weekdays and weekends?
+* The last part of this assignment is to evaluate the number of steps over the weekend verses weekdays.  We are going to create two factor variables called weekday and weekend.  By evaluating each day to determine if it is a weekend or weekday we can then make a plot to compair the the average number of steps between each data set.*
+
+Create the new factor variables
+```{r}
+weekdays <- c("Monday","Tuesday","Wednesday","Thursday","Friday")
+modData$dow <- as.factor(ifelse(is.element(weekdays(as.Date(modData$date)),weekdays), "Weekday", "Weekend"))
+dailySteps_2 <- aggregate(steps ~ interval + dow, modData, mean)
+
+library(lattice)
+xyplot(dailySteps_2$steps ~ dailySteps_2$interval|dailySteps_2$dow, main="Average Steps per Day by Interval",xlab="Interval", ylab="Steps",layout=c(1,2), type="l")
+
+
+```
+
+The End...

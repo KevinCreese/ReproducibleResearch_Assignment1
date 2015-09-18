@@ -39,16 +39,64 @@ data <- read.csv("activity.csv")
 summary(data)
 ```
 
+
 ## What is the mean total number of steps taken? 
 *(raw data)*
-Here we will summarize the steps by day, create a histogram, and calculate the mean and median.
+Summarize the steps by day, create a histogram, and calculate the mean and median.
 ```{r RawMean-Hist}
-daily_steps <- aggregate(steps ~ date, data, sum)
-hist(daily_steps$steps, main = paste("Total Steps by Day"), xlab="Number of Steps Each Day", col="green")
-StepsMean <- mean(daily_steps$steps)
-StepsMedian <- median(daily_steps$steps)
+dailySteps <- aggregate(steps ~ date, data, sum)
+hist(dailySteps$steps, main = paste("Total Steps by Day"), xlab="Number of                 Steps Each Day", col="green")
+StepsMean <- mean(dailySteps$steps)
+StepsMedian <- median(dailySteps$steps)
 ```
 
 The mean is `r StepsMean` and the median is `r StepsMedian`
+
+## What is the average daily activity pattern?
+
+ - Calculate the average steps for each interval for all days.  
+ - Plot the average number of steps per day by interval.  
+ - Find intervals with the most average steps.  
+
+```{r intervalsteps}
+intervalSteps <- aggregate(steps ~ interval, data, mean)
+
+plot(intervalSteps$interval,intervalSteps$steps, type="l", xlab="Interval", ylab="Number of Steps", main="Ave Number of Steps per Day by Interval")
+
+intervalMax <- intervalSteps[which.max(intervalSteps$steps),1]
+```
+
+## Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
+
+The average 5-minute interval that contains the maximum number of steps is `r intervalMax`.
+
+## Imputing Missing Values
+*There are a number of days and intervals that are missing values.  These have been captured as 'NA'. This section of the report will:*  
+ -- Capture and report the total number of missing values in the datase by reporting the total number of rows with 'NA's.
+ -- Devise a strategy for filling in all of these missing values.  Don't get to fancy, so I'm going to use the KISS method for this and apply the average for each day to a missing interval.
+ -- Then create a new data set that is equal to the origonal data set, but with the missing values built in.  
+ -- Make a histogram of the total number of steps taken each dan and calculate and report the **mean** and **median** total number of steps taken per day.    
+ - Do these values differ from the estimates from the first part of the assignment?  
+ - What is the impact of imputting missing data on the estimates of the total daily number of steps?  
+
+### Total number of missing values
+```{r missingValues}
+missing <- sum(!complete.cases(data))           
+```
+The total number of missing values is `r missing`.
+
+The stategy used to insert missing data will be to input and average for each interval.
+```{r modData}
+modData <- transform(data, steps = ifelse(is.na(data$steps), intervalSteps$steps[match(data$interval, intervalSteps$interval)], data$steps))
+summary(modData)
+
+```
+
+Recalculate the daily steps with the revisions made.
+
+```{r modDailySteps}
+modDailySteps <- aggregate(steps ~ date, modData, sum)
+hist(modDailySteps$steps, main = paste("Modified - Total Steps Each Day"), col="red", xlab="Number of steps")
+```
 
 
